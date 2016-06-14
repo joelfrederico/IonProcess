@@ -7,6 +7,5 @@ Name: libionsim
 Description: Supports ion simulations and processing
 URL: github.com/joelfrederico/libionsim
 Version: @VERSION@
-Requires: 
-Libs:
-Cflags:
+Libs: -L${libdir} -lionsim
+Cflags: -I${includedir}

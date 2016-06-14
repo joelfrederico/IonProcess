@@ -636,6 +636,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+API_VERSION
 MYAM_CPPFLAGS
 MYLDADD
 GFLAGS_LIBS
@@ -650,8 +651,7 @@ HDF5_CC
 HDF5_VERSION
 H5FC
 H5CC
-GSL_LIBS
-GSL_CFLAGS
+pkgconfigdir
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
@@ -788,6 +788,7 @@ with_aix_soname
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+with_pkgconfigdir
 with_hdf5
 '
       ac_precious_vars='build_alias
@@ -806,9 +807,7 @@ CPP
 CXXCPP
 PKG_CONFIG
 PKG_CONFIG_PATH
-PKG_CONFIG_LIBDIR
-GSL_CFLAGS
-GSL_LIBS'
+PKG_CONFIG_LIBDIR'
 
 
 # Initialize some variables set by options.
@@ -1450,6 +1449,8 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
+  --with-pkgconfigdir     pkg-config installation directory
+                          ['${libdir}/pkgconfig']
   --with-hdf5=yes/no/PATH location of h5cc or h5pcc for HDF5 configuration
 
 Some influential environment variables:
@@ -1471,8 +1472,6 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR
               path overriding pkg-config's built-in search path
-  GSL_CFLAGS  C compiler flags for GSL, overriding pkg-config
-  GSL_LIBS    linker flags for GSL, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -2988,6 +2987,9 @@ END
   fi
 fi
 
+
+
+# API version
 
 
 # Checks for programs.
@@ -15974,7 +15976,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-# Checks for libraries.
 
 
 
@@ -16096,96 +16097,22 @@ $as_echo "no" >&6; }
 	fi
 fi
 
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GSL" >&5
-$as_echo_n "checking for GSL... " >&6; }
 
-if test -n "$GSL_CFLAGS"; then
-    pkg_cv_GSL_CFLAGS="$GSL_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gsl >= 1.15\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gsl >= 1.15") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_GSL_CFLAGS=`$PKG_CONFIG --cflags "gsl >= 1.15" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
+
+# Check whether --with-pkgconfigdir was given.
+if test "${with_pkgconfigdir+set}" = set; then :
+  withval=$with_pkgconfigdir;
 else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$GSL_LIBS"; then
-    pkg_cv_GSL_LIBS="$GSL_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gsl >= 1.15\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gsl >= 1.15") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_GSL_LIBS=`$PKG_CONFIG --libs "gsl >= 1.15" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
+  with_pkgconfigdir='${libdir}/pkgconfig'
 fi
 
+pkgconfigdir=$with_pkgconfigdir
 
 
-if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        GSL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gsl >= 1.15" 2>&1`
-        else
-	        GSL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gsl >= 1.15" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$GSL_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gsl >= 1.15) were not met:
 
-$GSL_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables GSL_CFLAGS
-and GSL_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables GSL_CFLAGS
-and GSL_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	GSL_CFLAGS=$pkg_cv_GSL_CFLAGS
-	GSL_LIBS=$pkg_cv_GSL_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-fi
+# Checks for libraries.
 
 
 
@@ -16517,12 +16444,14 @@ GFLAGS_LIBS="-lgflags"
 GFLAGS_LIBS=$GFLAGS_LIBS
 
 
-MYLDADD="$GSL_LIBS $HDF5_LIBS $GFLAGS_LIBS"
+MYLDADD="$HDF5_LIBS $GFLAGS_LIBS"
 MYLDADD=$MYLDADD
 
 
-MYAM_CPPFLAGS="$GSL_CFLAGS $HDF5_CPPFLAGS $GFLAGS_CPPFLAGS"
+MYAM_CPPFLAGS="$HDF5_CPPFLAGS $GFLAGS_CPPFLAGS"
 MYAM_CPPFLAGS=$MYAM_CPPFLAGS
+
+API_VERSION=1
 
 
 # AC_LANG_PUSH([C++])
@@ -16536,8 +16465,8 @@ MYAM_CPPFLAGS=$MYAM_CPPFLAGS
 
 # Checks for library functions.
 
-
-ac_config_files="$ac_config_files Makefile src/Makefile src/ionsim.pc"
+# Rename the template .pc file to include the API version on configure
+ac_config_files="$ac_config_files Makefile src/Makefile src/ionsim-$API_VERSION.pc:src/ionsim.pc.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17640,6 +17569,7 @@ fi
 
 
 
+API_VERSION='$API_VERSION'
 
 _ACEOF
 
@@ -17654,7 +17584,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/ionsim.pc") CONFIG_FILES="$CONFIG_FILES src/ionsim.pc" ;;
+    "src/ionsim-$API_VERSION.pc") CONFIG_FILES="$CONFIG_FILES src/ionsim-$API_VERSION.pc:src/ionsim.pc.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

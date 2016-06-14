@@ -7,6 +7,9 @@ AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror -Woverride subdir-objects])
 AC_CONFIG_SRCDIR([src/ionsim.h])
 
+# API version
+m4_define([api_version],[1])
+
 # Checks for programs.
 # AX_PROG_CXX_MPI
 # AX_PROG_CC_MPI
@@ -16,18 +19,21 @@ AM_PROG_AR
 LT_INIT
 AC_CONFIG_MACRO_DIRS([m4])
 
+PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
+
 # Checks for libraries.
-PKG_CHECK_MODULES([GSL], [gsl >= 1.15])
 AX_LIB_HDF5
 # AC_CHECK_LIB([gflags], [], [HAVE_GFLAGS=1] [GFLAGS_LIBS="-lgflags"], AC_MSG_WARN([gflags is not installed.]))
 GFLAGS_LIBS="-lgflags"
 AC_SUBST(GFLAGS_LIBS,[$GFLAGS_LIBS])
 
-MYLDADD="$GSL_LIBS $HDF5_LIBS $GFLAGS_LIBS"
+MYLDADD="$HDF5_LIBS $GFLAGS_LIBS"
 AC_SUBST(MYLDADD,[$MYLDADD])
 
-MYAM_CPPFLAGS="$GSL_CFLAGS $HDF5_CPPFLAGS $GFLAGS_CPPFLAGS"
+MYAM_CPPFLAGS="$HDF5_CPPFLAGS $GFLAGS_CPPFLAGS"
 AC_SUBST(MYAM_CPPFLAGS,[$MYAM_CPPFLAGS])
+AC_SUBST([API_VERSION],api_version)
 
 # AC_LANG_PUSH([C++])
 # AC_CHECK_HEADER([gtest/gtest.h], [AC_DEFINE([HAVE_GTEST_H], 1)])
@@ -40,9 +46,10 @@ AC_SUBST(MYAM_CPPFLAGS,[$MYAM_CPPFLAGS])
 
 # Checks for library functions.
 
-
+# Rename the template .pc file to include the API version on configure
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-		 src/ionsim.pc
-		 ])
+		 src/ionsim-$API_VERSION.pc:src/ionsim.pc.in
+		],[],
+		[API_VERSION='$API_VERSION'])
 AC_OUTPUT
