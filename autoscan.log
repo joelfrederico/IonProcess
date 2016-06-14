@@ -1,0 +1,8 @@
+autoscan: warning: missing AC_CHECK_FUNCS([floor]) wanted by: 
+	src/ionprocess.cpp:142
+autoscan: warning: missing AC_CHECK_HEADER_STDBOOL wanted by: 
+	src/ionprocess.cpp:48
+	src/main.cpp:7
+	src/main.cpp:23
+autoscan: warning: missing AC_PROG_RANLIB wanted by: 
+	ltmain.sh:3772
