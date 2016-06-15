@@ -1,4 +1,5 @@
-#include "hdf5_classes.h"
+#include "ionsim_process.h"
+#include "ionsim_hdf5.h"
 #include <cmath>
 
 std::string _getion(unsigned int step)

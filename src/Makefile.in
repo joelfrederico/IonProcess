@@ -133,7 +133,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libionsim_la_LIBADD =
-am_libionsim_la_OBJECTS = ionsim.lo hdf5_classes.lo
+am_libionsim_la_OBJECTS = ionsim_process.lo ionsim_hdf5.lo
 libionsim_la_OBJECTS = $(am_libionsim_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -348,10 +348,10 @@ top_srcdir = @top_srcdir@
 # AM_CPPFLAGS=$(GSL_CFLAGS) $(HDF5_CPPFLAGS)
 AM_CPPFLAGS = $(MYAM_CPPFLAGS)
 lib_LTLIBRARIES = libionsim.la
-include_HEADERS = ionsim.h
+include_HEADERS = ionsim.h ionsim_hdf5.h ionsim_process.h
 libionsim_la_SOURCES = \
-			 ionsim.cpp \
-			 hdf5_classes.cpp
+			 ionsim_process.cpp \
+			 ionsim_hdf5.cpp
 
 all: all-am
 
@@ -433,8 +433,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hdf5_classes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_hdf5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

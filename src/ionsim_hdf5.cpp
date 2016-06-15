@@ -1,4 +1,4 @@
-#include "hdf5_classes.h"
+#include "ionsim_hdf5.h"
 #include <typeinfo>
 
 const bool DEBUG_FLAG = false;

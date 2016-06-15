@@ -1,5 +1,5 @@
-#ifndef __HDF5_CLASSES_H_INCLUDED__
-#define __HDF5_CLASSES_H_INCLUDED__
+#ifndef __IONSIM_HDF5_H_INCLUDED__
+#define __IONSIM_HDF5_H_INCLUDED__
 
 #include <hdf5.h>
 #include <string>
