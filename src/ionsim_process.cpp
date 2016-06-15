@@ -38,7 +38,7 @@ int get_n_field_z(std::string filename, int step)
 	return n_field_z_attr.read();
 }
 
-int makehist(std::string filename, int xbins, int step, unsigned long long *&hist, long &histsize, int &n_field_z)
+int makehist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z)
 {
 	// ==============================
 	// Initialize Vars 
@@ -122,6 +122,7 @@ int makehist(std::string filename, int xbins, int step, unsigned long long *&his
 	// ==============================
 	histsize = xbins*n_field_z;
 	delx = 2*x_abs_max/xbins;
+	hist.reserve(histsize);
 
 	for (int i=0; i < n_field_z ; i++)
 	{
@@ -155,7 +156,6 @@ int makehist(std::string filename, int xbins, int step, unsigned long long *&his
 	std::cout << "n_field_z: " << n_field_z << std::endl;
 	std::cout << "step: " << step << std::endl;
 	std::cout << "Hist[0]: " << hist[0] << std::endl;
-	std::cout << "Hist: " << hist << std::endl;
 
 	unsigned long long test = 0;
 	std::cout << "Test: " << test - 1 << std::endl;
