@@ -27,9 +27,11 @@ AC_SUBST(MYAM_CPPFLAGS,[$MYAM_CPPFLAGS])
 if test "$HDF5_TYPE" = "parallel"; then
 	AX_PROG_CXX_MPI
 	AX_PROG_CC_MPI
-else
+elif test "$HDF5_TYPE" = "serial"; then
 	AC_PROG_CC
 	AC_PROG_CXX
+else
+	AC_MSG_ERROR([Didn't find serial or parallel HDF5])
 fi
 AM_PROG_AR
 LT_INIT
