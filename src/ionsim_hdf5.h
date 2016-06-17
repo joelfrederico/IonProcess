@@ -5,6 +5,7 @@
 #include <string>
 #include <typeinfo>
 #include <iostream>
+#include <vector>
 
 class DataspaceCreate;
 
@@ -54,6 +55,9 @@ class DatasetOpen : public Debug
 
 		DatasetOpen(hid_t &loc_id, std::string dataset_str);
 		~DatasetOpen();
+
+		std::vector<double> getdata();
+		std::vector<double> get_single(int dim, std::vector<int> spec_dim);
 };
 
 class DatasetAccess : public Debug

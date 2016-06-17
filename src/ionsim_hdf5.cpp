@@ -3,9 +3,9 @@
 
 const bool DEBUG_FLAG = false;
 
-// ==================================
+// ==============================================
 // Debug
-// ==================================
+// ==============================================
 Debug::Debug(const bool debug_flag) :
 	debug(debug_flag)
 {
@@ -30,9 +30,9 @@ herr_t Debug::close(herr_t (*f)(hid_t), hid_t attr_id, std::string name)
 }
 
 
-// ==================================
+// ==============================================
 // GroupAccess
-// ==================================
+// ==============================================
 GroupAccess::GroupAccess(hid_t &loc_id, std::string group_str) :
 	Debug(DEBUG_FLAG),
 	_group_str(group_str)
@@ -42,9 +42,9 @@ GroupAccess::GroupAccess(hid_t &loc_id, std::string group_str) :
 	herr_t status;
 	H5G_info_t objinfo;
 
-	// ==================================
+	// ==============================================
 	// Access or create a new group
-	// ==================================
+	// ==============================================
 	H5Eset_auto(NULL, NULL, NULL);
 	group_id = H5Gopen(loc_id, _group_str.c_str(), H5P_DEFAULT);
 	if (group_id < 0)
@@ -60,16 +60,12 @@ GroupAccess::GroupAccess(hid_t &loc_id, std::string group_str) :
 
 GroupAccess::~GroupAccess()
 {
-	/* herr_t status; */
-
-	/* status = H5Gclose(group_id); */
-
 	close(&H5Gclose, group_id, _group_str);
 }
 
-// ==================================
+// ==============================================
 // GroupStepAccess
-// ==================================
+// ==============================================
 std::string _getstep(unsigned int step)
 {
 	std::string out;
@@ -84,18 +80,18 @@ GroupStepAccess::GroupStepAccess(hid_t &loc_id, unsigned int step) :
 {
 }
 
-// ==================================
+// ==============================================
 // DatasetOpen
-// ==================================
+// ==============================================
 DatasetOpen::DatasetOpen(hid_t &loc_id, std::string dataset_str) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str)
 {
 	_loc_id = loc_id;
 	
-	// ==================================
+	// ==============================================
 	// Open dataset
-	// ==================================
+	// ==============================================
 	dataset_id = H5Dopen(_loc_id, dataset_str.c_str(), H5P_DEFAULT);
 	dataspace_id = H5Dget_space(dataset_id);
 }
@@ -106,9 +102,112 @@ DatasetOpen::~DatasetOpen()
 	close(&H5Dclose, dataset_id, _dataset_str);
 }
 
-// ==================================
+std::vector<double> DatasetOpen::get_single(int dim, std::vector<int> spec_dim)
+{
+	std::vector<double> out;
+
+	double *buf;
+	int ndims;
+
+	int j;
+	hsize_t *offset, *count;
+	hsize_t *dims;
+	hsize_t current_dims[1];
+	hssize_t npoints;
+	hid_t memspace_id;
+	hid_t readspace_id;
+	herr_t status;
+
+	// ==============================================
+	// Get info about dimensionality
+	// ==============================================
+	ndims = H5Sget_simple_extent_ndims(dataspace_id);
+
+	if (dim >= ndims) throw std::runtime_error("Outside of dims.");
+
+	dims   = new hsize_t[ndims];
+	offset = new hsize_t[ndims];
+	count  = new hsize_t[ndims];
+
+	H5Sget_simple_extent_dims(dataspace_id, dims, NULL);
+
+	// ==============================================
+	// Set up vars
+	// ==============================================
+	current_dims[0] = dims[dim];
+	memspace_id = H5Screate_simple(1, current_dims, NULL);
+
+	j=0;
+	for (int i=0; i < ndims; i++)
+	{
+		if (i == dim)
+		{
+			offset[i] = 0;
+			npoints = dims[i];
+			count[i] = dims[i];
+		} else {
+			offset[i] = spec_dim[j];
+			count[i] = 1;
+			j++;
+		}
+	}
+
+	readspace_id = H5Dget_space(dataset_id);
+	status = H5Sselect_hyperslab(readspace_id, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+	buf = new double[npoints];
+	out.resize(npoints);
+
+	status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, memspace_id, readspace_id, H5P_DEFAULT, buf);
+
+	for (int i=0; i < npoints; i++)
+	{
+		out[i] = buf[i];
+	}
+
+	H5Sclose(memspace_id);
+	H5Sclose(readspace_id);
+	delete[] count;
+	delete[] offset;
+	delete[] buf;
+	delete[] dims;
+	return out;
+}
+
+std::vector<double> DatasetOpen::getdata()
+{
+	std::vector<double> out;
+	double *buf;
+	int ndims;
+	hsize_t *dims;
+	hssize_t npoints;
+
+	herr_t status;
+
+	ndims = H5Sget_simple_extent_ndims(dataspace_id);
+	dims = new hsize_t[ndims];
+
+	H5Sget_simple_extent_dims(dataspace_id, dims, NULL);
+	npoints = H5Sget_simple_extent_npoints(dataspace_id);
+
+	buf = new double[npoints];
+	out.reserve(npoints);
+
+	status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
+
+	for (int i=0; i < npoints; i++)
+	{
+		out[i] = buf[i];
+	}
+
+	delete[] buf;
+	delete[] dims;
+	return out;
+}
+
+// ==============================================
 // DatasetAccess
-// ==================================
+// ==============================================
 DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, hsize_t *dims) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str)
@@ -118,9 +217,9 @@ DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, h
 	dataspace = new DataspaceCreate(rank, dims);
 	dataspace_id = (*dataspace).dataspace_id;
 
-	// ==================================
+	// ==============================================
 	// Create dataset
-	// ==================================
+	// ==============================================
 	dataset_id = H5Dcreate(_loc_id, dataset_str.c_str(), H5T_NATIVE_DOUBLE, (*dataspace).dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 }
 
@@ -131,9 +230,9 @@ DatasetAccess::~DatasetAccess()
 	delete dataspace;
 }
 
-// ==================================
+// ==============================================
 // DataspaceCreate
-// ==================================
+// ==============================================
 DataspaceCreate::DataspaceCreate(int rank, hsize_t *dims) :
 	Debug(DEBUG_FLAG)
 {
@@ -151,9 +250,9 @@ DataspaceCreate::~DataspaceCreate()
 	close(&H5Sclose, dataspace_id, "dataspace");
 }
 
-// ==================================
+// ==============================================
 // PlistCreate
-// ==================================
+// ==============================================
 PlistCreate::PlistCreate(hid_t cls_id) :
 	Debug(DEBUG_FLAG)
 {
@@ -166,9 +265,9 @@ PlistCreate::~PlistCreate()
 	H5Pclose(plist_id);
 }
 
-// ==================================
+// ==============================================
 // AttributeOpen
-// ==================================
+// ==============================================
 AttributeOpen::AttributeOpen(hid_t loc_id, std::string attr_name) :
 	Debug(DEBUG_FLAG),
 	_loc_id(loc_id)
@@ -191,9 +290,9 @@ int AttributeOpen::read()
 	return out;
 }
 
-// ==================================
+// ==============================================
 // AttributeCreate
-// ==================================
+// ==============================================
 AttributeCreate::~AttributeCreate()
 {
 	close(&H5Aclose, attr_id, _attr_name);
@@ -201,9 +300,9 @@ AttributeCreate::~AttributeCreate()
 	delete _dataspace;
 }
 
-// ==================================
+// ==============================================
 // FileOpen
-// ==================================
+// ==============================================
 hid_t _fileopen(std::string filename, unsigned flags)
 {
 	return H5Fopen(filename.c_str(), flags, H5P_DEFAULT);
@@ -228,9 +327,9 @@ FileOpen::~FileOpen()
 	close(&H5Fclose, file_id, _filename);
 }
 
-// ==================================
+// ==============================================
 // FileCreate
-// ==================================
+// ==============================================
 hid_t _filecreate(std::string filename, unsigned flags)
 {
 	return H5Fcreate(filename.c_str(), flags, H5P_DEFAULT, H5P_DEFAULT);
