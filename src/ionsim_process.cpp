@@ -115,7 +115,6 @@ int makehist(std::string filename, int xbins, int step, std::vector<unsigned lon
 		delete dataspace;
 		delete ions;
 	}
-	std::cout << "Max: " << x_abs_max << std::endl;
 
 	// ==============================
 	// Histogram
@@ -151,14 +150,6 @@ int makehist(std::string filename, int xbins, int step, std::vector<unsigned lon
 		delete dataspace;
 		delete ions;
 	}
-
-	std::cout << "xbins: " << xbins << std::endl;
-	std::cout << "n_field_z: " << n_field_z << std::endl;
-	std::cout << "step: " << step << std::endl;
-	std::cout << "Hist[0]: " << hist[0] << std::endl;
-
-	unsigned long long test = 0;
-	std::cout << "Test: " << test - 1 << std::endl;
 
 	return 0;
 }
