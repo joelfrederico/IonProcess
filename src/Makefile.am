@@ -4,9 +4,11 @@ AM_CPPFLAGS=$(MYAM_CPPFLAGS)
 bin_PROGRAMS=ionprocess
 
 ionprocess_SOURCES=\
-		   ionsim_process.cpp
+		   ionsim_process.cpp \
+		   ionsim_process_classes.cpp
 
-ionprocess_LDADD=$(MYLDADD) libionsim.la
+ionprocess_LDADD=$(MYLDADD) $(GSL_LIBS) libionsim.la
+ionprocess_LDFLAGS=$(GSL_CFLAGS)
 
 lib_LTLIBRARIES=libionsim.la
 

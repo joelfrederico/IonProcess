@@ -8,6 +8,7 @@ AM_INIT_AUTOMAKE([-Wall -Werror -Woverride subdir-objects])
 AC_CONFIG_SRCDIR([src/ionsim.h])
 
 # Checks for libraries.
+PKG_CHECK_MODULES([GSL], [gsl >= 1.15])
 AX_LIB_HDF5()
 if test "$with_hdf5" = "no"; then
         AC_MSG_ERROR([Unable to find HDF5, we need parallel HDF5.])

@@ -1,7 +1,8 @@
 #include "ionsim_electrons.h"
 #include "ionsim.h"
+#include "ionsim_process_classes.h"
 
-int ionsim_process_electrons_phase(std::string filename)
+std::vector<int> ionsim_process_electrons_phase(std::string filename)
 {
 	std::vector<double> x, y;
 	/* ============================================== */
@@ -22,5 +23,5 @@ int ionsim_process_electrons_phase(std::string filename)
 
 	Hist2D hist(x, y, 100);
 
-	return 0;
+	return hist.dat;
 }

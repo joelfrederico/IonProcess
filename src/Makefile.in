@@ -148,9 +148,14 @@ libionsim_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libionsim_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am_ionprocess_OBJECTS = ionsim_process.$(OBJEXT)
+am_ionprocess_OBJECTS = ionsim_process.$(OBJEXT) \
+	ionsim_process_classes.$(OBJEXT)
 ionprocess_OBJECTS = $(am_ionprocess_OBJECTS)
-ionprocess_DEPENDENCIES = $(am__DEPENDENCIES_1) libionsim.la
+ionprocess_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	libionsim.la
+ionprocess_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ionprocess_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -246,6 +251,8 @@ EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GFLAGS_LIBS = @GFLAGS_LIBS@
 GREP = @GREP@
+GSL_CFLAGS = @GSL_CFLAGS@
+GSL_LIBS = @GSL_LIBS@
 H5CC = @H5CC@
 H5FC = @H5FC@
 HDF5_CC = @HDF5_CC@
@@ -360,9 +367,11 @@ top_srcdir = @top_srcdir@
 # AM_CPPFLAGS=$(GSL_CFLAGS) $(HDF5_CPPFLAGS)
 AM_CPPFLAGS = $(MYAM_CPPFLAGS)
 ionprocess_SOURCES = \
-		   ionsim_process.cpp
+		   ionsim_process.cpp \
+		   ionsim_process_classes.cpp
 
-ionprocess_LDADD = $(MYLDADD) libionsim.la
+ionprocess_LDADD = $(MYLDADD) $(GSL_LIBS) libionsim.la
+ionprocess_LDFLAGS = $(GSL_CFLAGS)
 lib_LTLIBRARIES = libionsim.la
 include_HEADERS = \
 		ionsim.h \
@@ -502,7 +511,7 @@ clean-binPROGRAMS:
 
 ionprocess$(EXEEXT): $(ionprocess_OBJECTS) $(ionprocess_DEPENDENCIES) $(EXTRA_ionprocess_DEPENDENCIES) 
 	@rm -f ionprocess$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(ionprocess_OBJECTS) $(ionprocess_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(ionprocess_LINK) $(ionprocess_OBJECTS) $(ionprocess_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -514,6 +523,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_hdf5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_ion_xz_hist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process_classes.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
