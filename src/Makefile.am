@@ -1,10 +1,25 @@
 # AM_CPPFLAGS=$(GSL_CFLAGS) $(HDF5_CPPFLAGS)
 AM_CPPFLAGS=$(MYAM_CPPFLAGS)
 
-lib_LTLIBRARIES = libionsim.la
+bin_PROGRAMS=ionprocess
 
-include_HEADERS = ionsim.h ionsim_hdf5.h ionsim_process.h
+ionprocess_SOURCES=\
+		   ionsim_process.cpp
+
+ionprocess_LDADD=$(MYLDADD) libionsim.la
+
+lib_LTLIBRARIES=libionsim.la
+
+include_HEADERS=\
+		ionsim.h \
+		ionsim_electrons.h \
+		ionsim_hdf5.h \
+		ionsim_ion_xz_hist.h
 
 libionsim_la_SOURCES=\
-			 ionsim_process.cpp \
-			 ionsim_hdf5.cpp
+			 ionsim_electrons.cpp \
+			 ionsim_hdf5.cpp \
+			 ionsim_ion_xz_hist.cpp
+
+libionsim_la_LIBADD=$(HDF5_LIBS)
+libionsim_la_LDFLAGS=$(HDF5_LDFLAGS)
