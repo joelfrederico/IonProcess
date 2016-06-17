@@ -1,4 +1,4 @@
-#include "ionsim_process.h"
+#include "ionsim_ion_xz_hist.h"
 #include "ionsim_hdf5.h"
 #include <cmath>
 
@@ -38,7 +38,7 @@ int get_n_field_z(std::string filename, int step)
 	return n_field_z_attr.read();
 }
 
-int makehist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z)
+int ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z)
 {
 	// ==============================
 	// Initialize Vars 
@@ -121,7 +121,7 @@ int makehist(std::string filename, int xbins, int step, std::vector<unsigned lon
 	// ==============================
 	histsize = xbins*n_field_z;
 	delx = 2*x_abs_max/xbins;
-	hist.reserve(histsize);
+	hist.resize(histsize);
 
 	for (int i=0; i < n_field_z ; i++)
 	{
