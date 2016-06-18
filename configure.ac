@@ -34,6 +34,7 @@ elif test "$HDF5_TYPE" = "serial"; then
 else
 	AC_MSG_ERROR([Didn't find serial or parallel HDF5])
 fi
+AX_CXX_COMPILE_STDCXX_11(,[mandatory])
 AM_PROG_AR
 LT_INIT
 AC_CONFIG_MACRO_DIRS([m4])

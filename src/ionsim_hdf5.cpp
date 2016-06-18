@@ -210,17 +210,47 @@ std::vector<double> DatasetOpen::getdata()
 // ==============================================
 DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, hsize_t *dims) :
 	Debug(DEBUG_FLAG),
-	_dataset_str(dataset_str)
+	_dataset_str(dataset_str),
+	_loc_id(loc_id)
 {
-	_loc_id = loc_id;
-	
-	dataspace = new DataspaceCreate(rank, dims);
-	dataspace_id = (*dataspace).dataspace_id;
+	std::vector<int> size;
+	size.resize(rank);
+	for (int i=0; i < rank; i++)
+	{
+		size[i] = dims[i];
+	}
+
+	_init(size, H5T_NATIVE_DOUBLE);
+}
+
+DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size) :
+	Debug(DEBUG_FLAG),
+	_dataset_str(dataset_str),
+	_loc_id(loc_id)
+{
+	_init(size, H5T_NATIVE_DOUBLE);
+}
+
+DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size, hid_t memtype_id) :
+	Debug(DEBUG_FLAG),
+	_dataset_str(dataset_str),
+	_loc_id(loc_id)
+{
+	_init(size, H5T_NATIVE_DOUBLE);
+}
+
+int DatasetAccess::_init(std::vector<int> size, hid_t memtype_id)
+{
+
+	dataspace = new DataspaceCreate(size);
+	dataspace_id = dataspace->dataspace_id;
 
 	// ==============================================
 	// Create dataset
 	// ==============================================
-	dataset_id = H5Dcreate(_loc_id, dataset_str.c_str(), H5T_NATIVE_DOUBLE, (*dataspace).dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	dataset_id = H5Dcreate(_loc_id, _dataset_str.c_str(), memtype_id, (*dataspace).dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+	return 0;
 }
 
 DatasetAccess::~DatasetAccess()
@@ -237,6 +267,23 @@ DataspaceCreate::DataspaceCreate(int rank, hsize_t *dims) :
 	Debug(DEBUG_FLAG)
 {
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
+}
+
+DataspaceCreate::DataspaceCreate(std::vector<int> size) :
+	Debug(DEBUG_FLAG)
+{
+	int rank = size.size();
+	hsize_t *dims;
+	dims = new hsize_t[rank];
+
+	for (int i=0; i < rank; i++)
+	{
+		dims[i] = size[i];
+	}
+
+	dataspace_id = H5Screate_simple(rank, dims, NULL);
+
+	delete[] dims;
 }
 
 DataspaceCreate::DataspaceCreate(H5S_class_t type) :

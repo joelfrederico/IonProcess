@@ -63,8 +63,10 @@ class DatasetOpen : public Debug
 class DatasetAccess : public Debug
 {
 	private:
-		hid_t _loc_id;
+		const hid_t _loc_id;
 		DataspaceCreate *dataspace;
+		
+		int _init(std::vector<int> size, hid_t memtype_id);
 
 	public:
 		const std::string _dataset_str;
@@ -73,6 +75,8 @@ class DatasetAccess : public Debug
 		hid_t dataset_id;
 
 		DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, hsize_t *dims);
+		DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size);
+		DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size, hid_t memtype_id);
 		~DatasetAccess();
 };
 
@@ -82,6 +86,7 @@ class DataspaceCreate : public Debug
 		hid_t dataspace_id;
 
 		DataspaceCreate(int rank, hsize_t *dims);
+		DataspaceCreate(std::vector<int> size);
 		DataspaceCreate(H5S_class_t type);
 		~DataspaceCreate();
 };

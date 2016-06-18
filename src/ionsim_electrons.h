@@ -4,6 +4,6 @@
 #include <iostream>
 #include <vector>
 
-std::vector<int> ionsim_process_electrons_phase(std::string filename);
+std::vector<int> ionsim_process_electrons_phase(std::string filename, int bins, int xind, int yind, std::vector<double> range, bool userange);
 
 #endif
