@@ -138,7 +138,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libionsim_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libionsim_la_OBJECTS = ionsim_electrons.lo ionsim_hdf5.lo \
-	ionsim_ion_xz_hist.lo
+	ionsim_process_classes.lo ionsim_ion_xz_hist.lo
 libionsim_la_OBJECTS = $(am_libionsim_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -148,8 +148,7 @@ libionsim_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libionsim_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am_ionprocess_OBJECTS = ionsim_process.$(OBJEXT) \
-	ionsim_process_classes.$(OBJEXT)
+am_ionprocess_OBJECTS = ionsim_process.$(OBJEXT)
 ionprocess_OBJECTS = $(am_ionprocess_OBJECTS)
 ionprocess_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	libionsim.la
@@ -368,14 +367,14 @@ top_srcdir = @top_srcdir@
 # AM_CPPFLAGS=$(GSL_CFLAGS) $(HDF5_CPPFLAGS)
 AM_CPPFLAGS = $(MYAM_CPPFLAGS)
 ionprocess_SOURCES = \
-		   ionsim_process.cpp \
-		   ionsim_process_classes.cpp
+		   ionsim_process.cpp
 
 ionprocess_LDADD = $(MYLDADD) $(GSL_LIBS) libionsim.la
 ionprocess_LDFLAGS = $(GSL_CFLAGS)
 lib_LTLIBRARIES = libionsim.la
 include_HEADERS = \
 		ionsim.h \
+		ionsim_process_classes.h \
 		ionsim_electrons.h \
 		ionsim_hdf5.h \
 		ionsim_ion_xz_hist.h
@@ -383,6 +382,7 @@ include_HEADERS = \
 libionsim_la_SOURCES = \
 			 ionsim_electrons.cpp \
 			 ionsim_hdf5.cpp \
+			 ionsim_process_classes.cpp \
 			 ionsim_ion_xz_hist.cpp
 
 libionsim_la_LIBADD = $(HDF5_LIBS)
@@ -524,7 +524,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_hdf5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_ion_xz_hist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process_classes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ionsim_process_classes.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

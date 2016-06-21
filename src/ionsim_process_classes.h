@@ -3,28 +3,33 @@
 
 #include <vector>
 #include <gsl/gsl_histogram2d.h>
+#include <hdf5.h>
 
 class Hist2D
 {
 	private:
 		gsl_histogram2d * _h;
-		double x_mag, y_mag;
-		double x_min, x_max, y_min, y_max;
-		double dat_size;
-		const int _nbins;
+		double x_mag, y_mag, x_min, x_max, y_min, y_max, dat_size;
+		int xbins, ybins, _nbins;
+		std::vector<int> dat;
 
 		int index(int i, int j);
-		int _init(const std::vector<double> &x, const std::vector<double> &y, int bins);
+		/* int _init(const std::vector<double> &x, const std::vector<double> &y, int bins); */
+		int _init(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel,int bins);
+		int _copy(const Hist2D &hist);
 
 	public:
-		Hist2D(const std::vector<double> &x, const std::vector<double> &y, int bins);
-		Hist2D(const std::vector<double> &x, const std::vector<double> &y, int bins, std::vector<double> range);
+		std::string xlabel_str, ylabel_str;
+
+		Hist2D();
+		Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int bins);
+		Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int bins, const std::vector<double> range);
+		Hist2D(const Hist2D &hist);
 		~Hist2D();
 
-		const int xbins, ybins;
+		Hist2D& operator=(const Hist2D &rhs);
 
-		std::vector<int> dat;
-		int data(int i, int j);
+		int writedata(hid_t loc_id);
 };
 
 #endif

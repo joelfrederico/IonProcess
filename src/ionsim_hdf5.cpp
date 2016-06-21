@@ -319,6 +319,7 @@ AttributeOpen::AttributeOpen(hid_t loc_id, std::string attr_name) :
 	Debug(DEBUG_FLAG),
 	_loc_id(loc_id)
 {
+	herr_t status;
 	attr_id = H5Aopen(loc_id, attr_name.c_str(), H5P_DEFAULT);
 }
 
@@ -327,14 +328,17 @@ AttributeOpen::~AttributeOpen()
 	close(&H5Aclose, attr_id, _attr_name);
 }
 
-int AttributeOpen::read()
+int AttributeOpen::read(void* buf)
 {
-	int out;
 	herr_t status;
 
-	status = H5Aread(attr_id, H5T_NATIVE_INT, &out);
+	attr_type = H5Aget_type(attr_id);
 
-	return out;
+	status = H5Aread(attr_id, attr_type, buf);
+
+	close(&H5Tclose, attr_type, _attr_name + ":AttributeType");
+
+	return status;
 }
 
 // ==============================================
@@ -342,9 +346,11 @@ int AttributeOpen::read()
 // ==============================================
 AttributeCreate::~AttributeCreate()
 {
-	close(&H5Aclose, attr_id, _attr_name);
-
-	delete _dataspace;
+	if (_init_success)
+	{
+		close(&H5Aclose, attr_id, _attr_name);
+		delete _dataspace;
+	}
 }
 
 // ==============================================

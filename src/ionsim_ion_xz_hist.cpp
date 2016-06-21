@@ -23,6 +23,7 @@ int index(int i, int j, int k, int ncols, int nrows)
 
 int get_n_field_z(std::string filename, int step)
 {
+	int n_field_z;
 	// ==============================
 	// Open files for reading/writing
 	// ==============================
@@ -35,7 +36,8 @@ int get_n_field_z(std::string filename, int step)
 	GroupAccess ionstep(stepgroup.group_id, "ions_steps");
 
 	AttributeOpen n_field_z_attr(data.file_id, "n_field_z");
-	return n_field_z_attr.read();
+	n_field_z_attr.read(&n_field_z);
+	return n_field_z;
 }
 
 int ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z)
@@ -73,9 +75,9 @@ int ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsigned 
 	GroupAccess ionstep(stepgroup.group_id, "ions_steps");
 
 	AttributeOpen n_field_z_attr(data.file_id, "n_field_z");
-	n_field_z = n_field_z_attr.read();
+	n_field_z_attr.read(&n_field_z);
 	AttributeOpen z_end_attr(data.file_id, "z_end");
-	z_end = z_end_attr.read();
+	z_end_attr.read(&z_end);
 
 	// ==============================
 	// Loop over ions to find range

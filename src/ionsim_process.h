@@ -1,6 +1,4 @@
 #ifndef __IONSIM_PROCESS_H_INCLUDED__
 #define __IONSIM_PROCESS_H_INCLUDED__
 
-
-
 #endif

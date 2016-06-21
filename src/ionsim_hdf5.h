@@ -108,6 +108,7 @@ class AttributeOpen : public Debug
 	private:
 		const std::string _attr_name;
 		const hid_t _loc_id;
+		hid_t attr_type;
 
 	public:
 		hid_t attr_id;
@@ -115,7 +116,7 @@ class AttributeOpen : public Debug
 		AttributeOpen(hid_t loc_id, std::string attr_name);
 		~AttributeOpen();
 
-		int read();
+		int read(void* out);
 };
 
 class AttributeCreate : public Debug
@@ -123,6 +124,7 @@ class AttributeCreate : public Debug
 	private:
 		hid_t _loc_id;
 		hid_t type_id;
+		bool _init_success;
 		const std::string _attr_name;
 		DataspaceCreate * _dataspace;
 
@@ -154,6 +156,7 @@ class AttributeCreate : public Debug
 				status = H5Tset_size(type_id, H5T_VARIABLE);
 			} else {
 				printf("Not a valid attribute type.\n");
+				_init_success = false;
 				return;
 			}
 
@@ -180,6 +183,7 @@ class AttributeCreate : public Debug
 			if (typeid(attr_value) == typeid(const char *)) {
 				H5Tclose(type_id);
 			}
+			_init_success = true;
 		}
 
 		~AttributeCreate();

@@ -13,9 +13,9 @@ std::vector<double> get_coords(FileOpen &file, int coord)
 
 }
 
-std::vector<int> ionsim_process_electrons_phase(std::string filename, int bins, int xind, int yind, std::vector<double> range, bool userange)
+Hist2D ionsim_process_electrons_phase(std::string filename, int bins, int xind, int yind, std::vector<double> range, bool userange)
 {
-	Hist2D *hist;
+	Hist2D hist;
 	std::vector<double> x, y;
 	std::vector<int>spec_dim;
 	/* ============================================== */
@@ -29,12 +29,14 @@ std::vector<int> ionsim_process_electrons_phase(std::string filename, int bins, 
 	x = get_coords(filein, xind);
 	y = get_coords(filein, yind);
 
+	std::vector<std::string> coord_name = {"x", "xp", "y", "yp", "z", "zp"};
+
 	if (userange)
 	{
-		hist = new Hist2D(x, y, bins, range);
+		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins, range);
 	} else {
-		hist = new Hist2D(x, y, bins);
+		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins);
 	}
 
-	return hist->dat;
+	return hist;
 }
