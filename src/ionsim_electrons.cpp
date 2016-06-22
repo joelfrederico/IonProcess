@@ -39,9 +39,9 @@ Hist2D ionsim_process_electrons_phase(std::string filename, int bins, int xind, 
 
 	if (userange)
 	{
-		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins, range);
+		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins, bins, range);
 	} else {
-		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins);
+		hist = Hist2D(x, y, coord_name[xind], coord_name[yind], bins, bins);
 	}
 
 	return hist;

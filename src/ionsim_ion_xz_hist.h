@@ -6,7 +6,6 @@
 #include "ionsim_process_classes.h"
 
 std::string _getion(unsigned int step);
-/* Hist2D ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z); */
-Hist2D ion_xz_hist(std::string filename, int xbins, int step);
+Hist2D ion_xz_hist(std::string filename, int xbins, int step, double slicewidth);
 
 #endif

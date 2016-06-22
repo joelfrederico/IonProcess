@@ -1,3 +1,4 @@
+#include "ionsim.h"
 #include "ionsim_process_classes.h"
 #include <gsl/gsl_histogram2d.h>
 #include <algorithm>
@@ -18,8 +19,8 @@ Hist2D::Hist2D() :
 	_h = gsl_histogram2d_alloc(xbins, ybins);
 }
 
-Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int bins) :
-	xbins(bins), ybins(bins), _nbins(bins*bins)
+Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int xbins, const int ybins) :
+	xbins(xbins), ybins(ybins), _nbins(xbins*ybins)
 {
 	// ==============================================
 	// Find ranges
@@ -40,14 +41,16 @@ Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const
 	y_min = -y_mag;
 	y_max = y_mag;
 
-	_init(x, y, xlabel, ylabel, bins);
+	_init(x, y, xlabel, ylabel);
 }
 
-Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int bins, const std::vector<double> range) :
-	xbins(bins), ybins(bins), _nbins(bins*bins)
+Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel, const int xbins, const int ybins, const std::vector<double> range) :
+	xbins(xbins), ybins(ybins), _nbins(xbins*ybins)
 {
+	double del = (range[1]-range[0])/xbins;
+	IS_PRINT(del);
 	x_min = range[0];
-	x_max = range[1];
+	x_max = range[1] + del;
 
 	y_mag = 0;
 	for (int i=0; i < y.size(); i++)
@@ -57,7 +60,7 @@ Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const
 	y_min = -y_mag;
 	y_max = y_mag;
 
-	_init(x, y, xlabel, ylabel, bins);
+	_init(x, y, xlabel, ylabel);
 }
 
 int Hist2D::_copy(const Hist2D &hist)
@@ -102,11 +105,26 @@ Hist2D& Hist2D::operator=(const Hist2D &rhs)
 	return *this;
 }
 
-int Hist2D::_init(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel,int bins)
+int getrange(double *&range, int bins, double min, double max)
+{
+	double del;
+	del = (max-min)/bins;
+	for (int i=0; i < bins; i++)
+	{
+		range[i] = min + del*i;
+	}
+	range[bins] = max + del;
+	
+	return 0;
+}
+
+int Hist2D::_init(const std::vector<double> &x, const std::vector<double> &y, const std::string xlabel, const std::string ylabel)
 {
 	// ==============================================
 	// Initialize stuff
 	// ==============================================
+	double *xrange, *yrange;
+	double dx, dy;
 	xlabel_str = xlabel;
 	ylabel_str = ylabel;
 	_h = gsl_histogram2d_alloc(xbins, ybins);
@@ -123,7 +141,14 @@ int Hist2D::_init(const std::vector<double> &x, const std::vector<double> &y, co
 	// ==============================================
 	// Do histogramming
 	// ==============================================
-	gsl_histogram2d_set_ranges_uniform(_h, x_min, x_max, y_min, y_max);
+	xrange = new double[xbins+1];
+	getrange(xrange, xbins, x_min, x_max);
+	yrange = new double[ybins+1];
+	getrange(yrange, ybins, y_min, y_max);
+	
+	gsl_histogram2d_set_ranges(_h, xrange, xbins+1, yrange, ybins+1);
+	delete[] xrange;
+	delete[] yrange;
 
 	for (int i=0; i < x.size(); i++)
 	{
@@ -159,7 +184,7 @@ int Hist2D::index(int i, int j)
 	return i * ybins + j;
 }
 
-int Hist2D::writedata(hid_t loc_id)
+int Hist2D::writedata(hid_t loc_id) const
 {
 	std::vector<int> size(2);
 	size[0] = xbins;
