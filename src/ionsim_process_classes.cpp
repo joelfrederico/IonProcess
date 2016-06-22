@@ -48,7 +48,6 @@ Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const
 	xbins(xbins), ybins(ybins), _nbins(xbins*ybins)
 {
 	double del = (range[1]-range[0])/xbins;
-	IS_PRINT(del);
 	x_min = range[0];
 	x_max = range[1] + del;
 

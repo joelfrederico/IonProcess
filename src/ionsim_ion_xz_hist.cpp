@@ -74,9 +74,8 @@ Hist2D ion_xz_hist(std::string filename, int xbins, int step, double slicewidth)
 			}
 		}
 	}
-	std::cout << "\r" << std::flush;
+	std::cout << "\r" << std::endl;
 
-	IS_PRINT(z_save.size());
 	std::vector<double> range(2);
 	range[0] = 0;
 	range[1] = n_field_z;

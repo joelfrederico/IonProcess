@@ -1,10 +1,17 @@
 #include "ionsim.h"
-#include "ionsim_process.h"
 #include <iostream>
 #include <vector>
 #include <gflags/gflags.h>
 
 DEFINE_bool(verbose, false, "Verbose mode");
+DEFINE_double(slicewidth, 2e-6, "Slice width in y");
+
+void status(std::string msg)
+{
+	std::cout << "----------------------------------------------" << std::endl;
+	std::cout << msg << std::endl;
+	std::cout << "----------------------------------------------" << std::endl;
+}
 
 int main(int argc, char **argv)
 {
@@ -31,10 +38,12 @@ int main(int argc, char **argv)
 	std::vector<double> range(2);
 	double z_end;
 	int bins = 101;
+	bool userange;
 
 	// ==============================================
 	// Create output file
 	// ==============================================
+	status("Creating output files...");
 	FileCreate file(filename + ".process.h5");
 	FileOpen filein(filename);
 	AttributeOpen z_end_attr(filein.file_id, "z_end");
@@ -45,6 +54,7 @@ int main(int argc, char **argv)
 	// ==============================================
 	// Phase space histogram
 	// ==============================================
+	status("Processing phase space histograms...");
 	range[0] = 0;
 	range[1] = z_end;
 
@@ -56,10 +66,9 @@ int main(int argc, char **argv)
 	coord_name[4] = "z";
 	coord_name[5] = "zp";
 
-	bool userange;
-
 	for (int i=0; i < 5; i+=2)
 	{
+		std::cout << coord_name[i] << " plane..." << std::endl;
 		if (i == 4)
 		{
 			userange = true;
@@ -74,6 +83,7 @@ int main(int argc, char **argv)
 	// ==============================================
 	// Config space histograms
 	// ==============================================
+	status("Processing config space histograms...");
 	// X-Y Histogram
 	hist = ionsim_process_electrons_phase(filename, bins, 0, 2, range, false);
 	hist.writedata(electron_group.group_id);
@@ -89,7 +99,8 @@ int main(int argc, char **argv)
 	// ==============================================
 	// Ion histograms
 	// ==============================================
-	hist = ion_xz_hist(filename, bins, 0, 2e-6);
+	status("Processing ion slice histogram...");
+	hist = ion_xz_hist(filename, bins, 0, FLAGS_slicewidth);
 	hist.writedata(ion_group.group_id);
 	return 0;
 }
