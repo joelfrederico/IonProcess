@@ -191,7 +191,7 @@ std::vector<double> DatasetOpen::getdata()
 	npoints = H5Sget_simple_extent_npoints(dataspace_id);
 
 	buf = new double[npoints];
-	out.reserve(npoints);
+	out.resize(npoints);
 
 	status = H5Dread(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
 

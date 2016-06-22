@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 	FileOpen filein(filename);
 	AttributeOpen z_end_attr(filein.file_id, "z_end");
 	z_end_attr.read(&z_end);
+	GroupAccess electron_group(file.file_id, "electrons");
 
 	// ==============================================
 	// Phase space histogram
@@ -58,7 +59,7 @@ int main(int argc, char **argv)
 		}
 
 		hist = ionsim_process_electrons_phase(filename, bins, i, i+1, range, userange);
-		hist.writedata(file.file_id);
+		hist.writedata(electron_group.group_id);
 	}
 
 	// ==============================================
@@ -66,20 +67,20 @@ int main(int argc, char **argv)
 	// ==============================================
 	// X-Y Histogram
 	hist = ionsim_process_electrons_phase(filename, bins, 0, 2, range, false);
-	hist.writedata(file.file_id);
+	hist.writedata(electron_group.group_id);
 
 
 	// Z-Y Histogram
 	hist = ionsim_process_electrons_phase(filename, bins, 4, 2, range, true);
-	hist.writedata(file.file_id);
+	hist.writedata(electron_group.group_id);
 
 	// Z-X Histogram
 	hist = ionsim_process_electrons_phase(filename, bins, 4, 0, range, true);
-	hist.writedata(file.file_id);
+	hist.writedata(electron_group.group_id);
 
 	// ==============================================
 	// Ion histograms
 	// ==============================================
-	
+	hist = ion_xz_hist(filename, xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z);
 	return 0;
 }
