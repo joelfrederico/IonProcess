@@ -44,9 +44,17 @@ int main(int argc, char **argv)
 	// ==============================================
 	// Phase space histogram
 	// ==============================================
-	range = {0, z_end};
+	range[0] = 0;
+	range[1] = z_end;
 
-	std::vector<std::string> coord_name = {"x", "xp", "y", "yp", "z", "zp"};
+	std::vector<std::string> coord_name;
+	coord_name[0] = "x";
+	coord_name[1] = "xp";
+	coord_name[2] = "y";
+	coord_name[3] = "yp";
+	coord_name[4] = "z";
+	coord_name[5] = "zp";
+
 	bool userange;
 
 	for (int i=0; i < 5; i+=2)
@@ -81,6 +89,6 @@ int main(int argc, char **argv)
 	// ==============================================
 	// Ion histograms
 	// ==============================================
-	hist = ion_xz_hist(filename, xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z);
+	hist = ion_xz_hist(filename, 100, 0);
 	return 0;
 }

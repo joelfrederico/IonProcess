@@ -25,17 +25,17 @@ Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const
 	// Find ranges
 	// ==============================================
 	x_mag = 0;
-	for (double x_val: x)
+	for (int i=0; i < x.size(); i++)
 	{
-		x_mag = std::max(x_mag, fabs(x_val));
+		x_mag = std::max(x_mag, fabs(x[i]));
 	}
 	x_min = -x_mag;
 	x_max = x_mag;
 
 	y_mag = 0;
-	for (double y_val: y)
+	for (int i=0; i < y.size(); i++)
 	{
-		y_mag = std::max(y_mag, fabs(y_val));
+		y_mag = std::max(y_mag, fabs(y[i]));
 	}
 	y_min = -y_mag;
 	y_max = y_mag;
@@ -50,9 +50,9 @@ Hist2D::Hist2D(const std::vector<double> &x, const std::vector<double> &y, const
 	x_max = range[1];
 
 	y_mag = 0;
-	for (double y_val: y)
+	for (int i=0; i < y.size(); i++)
 	{
-		y_mag = std::max(y_mag, fabs(y_val));
+		y_mag = std::max(y_mag, fabs(y[i]));
 	}
 	y_min = -y_mag;
 	y_max = y_mag;
@@ -161,7 +161,9 @@ int Hist2D::index(int i, int j)
 
 int Hist2D::writedata(hid_t loc_id)
 {
-	std::vector<int> size = {xbins, ybins};
+	std::vector<int> size(2);
+	size[0] = xbins;
+	size[1] = ybins;
 	std::string name = "hist_" + xlabel_str + ylabel_str;
 	herr_t status;
 	DatasetAccess hist_dataset(loc_id, name, size, H5T_NATIVE_INT);

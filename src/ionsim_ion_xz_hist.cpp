@@ -12,7 +12,7 @@ std::string _getion(unsigned int step)
 	return out;
 }
 
-Hist2D ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsigned long long> &hist, long &histsize, int &n_field_z)
+Hist2D ion_xz_hist(std::string filename, int xbins, int step)
 {
 	// ==============================
 	// Initialize Vars 
@@ -28,6 +28,7 @@ Hist2D ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsign
 	double z_end;
 	double x_abs_max;
 	double *count, *z_array;
+	int n_field_z;
 
 	DatasetOpen *dataset;
 
@@ -48,18 +49,21 @@ Hist2D ion_xz_hist(std::string filename, int xbins, int step, std::vector<unsign
 	z_end_attr.read(&z_end);
 
 	std::vector<double> x, x_save, z, z_save;
+	std::vector<int> dimselect(1);
 
 	for (int i=0; i < n_field_z; i++)
 	{
 		dataset = new DatasetOpen(ionstep.group_id, _getion(0));
-		x = dataset->get_single(0, {0});
-		z = dataset->get_single(0, {4});
+		dimselect[0] = 0;
+		x = dataset->get_single(0, dimselect);
+		dimselect[0] = 4;
+		z = dataset->get_single(0, dimselect);
 		for (int j=0; j < x.size(); j++)
 		{
 			if (std::abs(x[j]) <= dx)
 			{
 				x_save.push_back(x[j]);
-				z_save.push_back();
+				z_save.push_back(z[j]);
 			}
 		}
 	}

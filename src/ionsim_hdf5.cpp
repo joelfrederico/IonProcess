@@ -1,5 +1,6 @@
 #include "ionsim_hdf5.h"
 #include <typeinfo>
+#include <stdexcept>
 
 const bool DEBUG_FLAG = false;
 
