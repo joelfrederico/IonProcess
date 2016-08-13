@@ -17,7 +17,7 @@ class Debug
 	public:
 		Debug(const bool debug);
 
-		herr_t close(herr_t (*f)(hid_t), hid_t attr_id, std::string name);
+		herr_t close(herr_t (*f)(hid_t), hid_t attr_id, std::string name) const;
 };
 
 class GroupAccess : public Debug
@@ -29,7 +29,7 @@ class GroupAccess : public Debug
 	public:
 		hid_t group_id;
 
-		GroupAccess(hid_t &loc_id, std::string group_str);
+		GroupAccess(const hid_t &loc_id, const std::string group_str);
 		~GroupAccess();
 
 };
@@ -37,7 +37,7 @@ class GroupAccess : public Debug
 class GroupStepAccess : public GroupAccess
 {
 	public:
-		GroupStepAccess(hid_t &loc_id, unsigned int step);
+		GroupStepAccess(const hid_t &loc_id, unsigned int step);
 };
 
 class DatasetOpen : public Debug
@@ -53,11 +53,11 @@ class DatasetOpen : public Debug
 		hid_t dataset_id;
 		hid_t dataspace_id;
 
-		DatasetOpen(hid_t &loc_id, std::string dataset_str);
+		DatasetOpen(const hid_t &loc_id, const std::string dataset_str);
 		~DatasetOpen();
 
-		std::vector<double> getdata();
-		std::vector<double> get_single(int dim, std::vector<int> spec_dim);
+		std::vector<double> getdata() const;
+		std::vector<double> get_single(const int dim, const std::vector<int> spec_dim) const;
 };
 
 class DatasetAccess : public Debug
@@ -74,9 +74,9 @@ class DatasetAccess : public Debug
 		hid_t dataspace_id;
 		hid_t dataset_id;
 
-		DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, hsize_t *dims);
-		DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size);
-		DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size, hid_t memtype_id);
+		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const int rank, const hsize_t *dims);
+		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size);
+		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id);
 		~DatasetAccess();
 };
 
@@ -85,9 +85,9 @@ class DataspaceCreate : public Debug
 	public:
 		hid_t dataspace_id;
 
-		DataspaceCreate(int rank, hsize_t *dims);
-		DataspaceCreate(std::vector<int> size);
-		DataspaceCreate(H5S_class_t type);
+		DataspaceCreate(const int rank, const hsize_t *dims);
+		DataspaceCreate(const std::vector<int> size);
+		DataspaceCreate(const H5S_class_t type);
 		~DataspaceCreate();
 };
 
@@ -99,7 +99,7 @@ class PlistCreate : public Debug
 	public:
 		hid_t plist_id;
 
-		PlistCreate(hid_t cls_id);
+		PlistCreate(const hid_t cls_id);
 		~PlistCreate();
 };
 
@@ -113,7 +113,7 @@ class AttributeOpen : public Debug
 	public:
 		hid_t attr_id;
 
-		AttributeOpen(hid_t loc_id, std::string attr_name);
+		AttributeOpen(const hid_t loc_id, const std::string attr_name);
 		~AttributeOpen();
 
 		int read(void* out);
@@ -132,7 +132,7 @@ class AttributeCreate : public Debug
 		hid_t attr_id;
 
 		template <class T>
-		AttributeCreate(hid_t loc_id, const std::string &attr_name, T attr_value) :
+		AttributeCreate(const hid_t loc_id, const std::string &attr_name, const T attr_value) :
 			Debug(false),
 			_attr_name(attr_name)
 		{
@@ -197,8 +197,8 @@ class FileOpen : public Debug
 	public:
 		hid_t file_id;
 
-		FileOpen(std::string filename);
-		FileOpen(std::string filename, unsigned flags);
+		FileOpen(const std::string filename);
+		FileOpen(const std::string filename, const unsigned flags);
 		~FileOpen();
 };
 
@@ -210,8 +210,8 @@ class FileCreate : public Debug
 	public:
 		hid_t file_id;
 
-		FileCreate(std::string filename);
-		FileCreate(std::string filename, unsigned flags);
+		FileCreate(const std::string filename);
+		FileCreate(const std::string filename, const unsigned flags);
 		~FileCreate();
 };
 

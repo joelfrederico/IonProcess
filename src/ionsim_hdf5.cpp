@@ -12,7 +12,7 @@ Debug::Debug(const bool debug_flag) :
 {
 }
 
-herr_t Debug::close(herr_t (*f)(hid_t), hid_t attr_id, std::string name)
+herr_t Debug::close(herr_t (*f)(hid_t), const hid_t attr_id, const std::string name) const
 {
 	herr_t status;
 
@@ -34,7 +34,7 @@ herr_t Debug::close(herr_t (*f)(hid_t), hid_t attr_id, std::string name)
 // ==============================================
 // GroupAccess
 // ==============================================
-GroupAccess::GroupAccess(hid_t &loc_id, std::string group_str) :
+GroupAccess::GroupAccess(const hid_t &loc_id, const std::string group_str) :
 	Debug(DEBUG_FLAG),
 	_group_str(group_str)
 {
@@ -67,7 +67,7 @@ GroupAccess::~GroupAccess()
 // ==============================================
 // GroupStepAccess
 // ==============================================
-std::string _getstep(unsigned int step)
+std::string _getstep(const unsigned int step)
 {
 	std::string out;
 	char buf[10];
@@ -76,7 +76,7 @@ std::string _getstep(unsigned int step)
 	return out;
 }
 
-GroupStepAccess::GroupStepAccess(hid_t &loc_id, unsigned int step) :
+GroupStepAccess::GroupStepAccess(const hid_t &loc_id, const unsigned int step) :
 	GroupAccess(loc_id, _getstep(step))
 {
 }
@@ -84,7 +84,7 @@ GroupStepAccess::GroupStepAccess(hid_t &loc_id, unsigned int step) :
 // ==============================================
 // DatasetOpen
 // ==============================================
-DatasetOpen::DatasetOpen(hid_t &loc_id, std::string dataset_str) :
+DatasetOpen::DatasetOpen(const hid_t &loc_id, const std::string dataset_str) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str)
 {
@@ -103,7 +103,7 @@ DatasetOpen::~DatasetOpen()
 	close(&H5Dclose, dataset_id, _dataset_str);
 }
 
-std::vector<double> DatasetOpen::get_single(int dim, std::vector<int> spec_dim)
+std::vector<double> DatasetOpen::get_single(const int dim, const std::vector<int> spec_dim) const
 {
 	std::vector<double> out;
 
@@ -175,7 +175,7 @@ std::vector<double> DatasetOpen::get_single(int dim, std::vector<int> spec_dim)
 	return out;
 }
 
-std::vector<double> DatasetOpen::getdata()
+std::vector<double> DatasetOpen::getdata() const
 {
 	std::vector<double> out;
 	double *buf;
@@ -209,7 +209,7 @@ std::vector<double> DatasetOpen::getdata()
 // ==============================================
 // DatasetAccess
 // ==============================================
-DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, hsize_t *dims) :
+DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const int rank, const hsize_t *dims) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str),
 	_loc_id(loc_id)
@@ -224,7 +224,7 @@ DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, int rank, h
 	_init(size, H5T_NATIVE_DOUBLE);
 }
 
-DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size) :
+DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str),
 	_loc_id(loc_id)
@@ -232,7 +232,7 @@ DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector
 	_init(size, H5T_NATIVE_DOUBLE);
 }
 
-DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector<int> size, hid_t memtype_id) :
+DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str),
 	_loc_id(loc_id)
@@ -240,7 +240,7 @@ DatasetAccess::DatasetAccess(hid_t &loc_id, std::string dataset_str, std::vector
 	_init(size, H5T_NATIVE_DOUBLE);
 }
 
-int DatasetAccess::_init(std::vector<int> size, hid_t memtype_id)
+int DatasetAccess::_init(const std::vector<int> size, const hid_t memtype_id)
 {
 
 	dataspace = new DataspaceCreate(size);
@@ -264,13 +264,13 @@ DatasetAccess::~DatasetAccess()
 // ==============================================
 // DataspaceCreate
 // ==============================================
-DataspaceCreate::DataspaceCreate(int rank, hsize_t *dims) :
+DataspaceCreate::DataspaceCreate(const int rank, const hsize_t *dims) :
 	Debug(DEBUG_FLAG)
 {
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
 }
 
-DataspaceCreate::DataspaceCreate(std::vector<int> size) :
+DataspaceCreate::DataspaceCreate(const std::vector<int> size) :
 	Debug(DEBUG_FLAG)
 {
 	int rank = size.size();
@@ -287,7 +287,7 @@ DataspaceCreate::DataspaceCreate(std::vector<int> size) :
 	delete[] dims;
 }
 
-DataspaceCreate::DataspaceCreate(H5S_class_t type) :
+DataspaceCreate::DataspaceCreate(const H5S_class_t type) :
 	Debug(DEBUG_FLAG)
 {
 	dataspace_id = H5Screate(type);
@@ -301,7 +301,7 @@ DataspaceCreate::~DataspaceCreate()
 // ==============================================
 // PlistCreate
 // ==============================================
-PlistCreate::PlistCreate(hid_t cls_id) :
+PlistCreate::PlistCreate(const hid_t cls_id) :
 	Debug(DEBUG_FLAG)
 {
 	_cls_id = cls_id;
@@ -316,7 +316,7 @@ PlistCreate::~PlistCreate()
 // ==============================================
 // AttributeOpen
 // ==============================================
-AttributeOpen::AttributeOpen(hid_t loc_id, std::string attr_name) :
+AttributeOpen::AttributeOpen(const hid_t loc_id, const std::string attr_name) :
 	Debug(DEBUG_FLAG),
 	_loc_id(loc_id)
 {
@@ -357,7 +357,7 @@ AttributeCreate::~AttributeCreate()
 // ==============================================
 // FileOpen
 // ==============================================
-hid_t _fileopen(std::string filename, unsigned flags)
+hid_t _fileopen(const std::string filename, const unsigned flags)
 {
 	return H5Fopen(filename.c_str(), flags, H5P_DEFAULT);
 }
@@ -369,7 +369,7 @@ FileOpen::FileOpen(std::string filename) :
 	file_id = _fileopen(filename, H5F_ACC_RDONLY);
 }
 
-FileOpen::FileOpen(std::string filename, unsigned flags) :
+FileOpen::FileOpen(const std::string filename, const unsigned flags) :
 	Debug(DEBUG_FLAG)
 {
 	_filename = filename;
@@ -384,19 +384,19 @@ FileOpen::~FileOpen()
 // ==============================================
 // FileCreate
 // ==============================================
-hid_t _filecreate(std::string filename, unsigned flags)
+hid_t _filecreate(const std::string filename, const unsigned flags)
 {
 	return H5Fcreate(filename.c_str(), flags, H5P_DEFAULT, H5P_DEFAULT);
 }
 
-FileCreate::FileCreate(std::string filename) :
+FileCreate::FileCreate(const std::string filename) :
 	Debug(DEBUG_FLAG)
 {
 	_filename = filename;
 	file_id = _filecreate(filename, H5F_ACC_TRUNC);
 }
 
-FileCreate::FileCreate(std::string filename, unsigned flags) :
+FileCreate::FileCreate(const std::string filename, const unsigned flags) :
 	Debug(DEBUG_FLAG)
 {
 	_filename = filename;
