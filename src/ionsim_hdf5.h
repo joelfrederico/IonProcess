@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 
+const bool DEBUG_FLAG = false;
 class DataspaceCreate;
 
 class Debug
@@ -28,6 +29,7 @@ class GroupAccess : public Debug
 
 	public:
 		hid_t group_id;
+		hid_t loc_id;
 
 		GroupAccess(const hid_t &loc_id, const std::string group_str);
 		~GroupAccess();
@@ -60,35 +62,77 @@ class DatasetOpen : public Debug
 		std::vector<double> get_single(const int dim, const std::vector<int> spec_dim) const;
 };
 
-class DatasetAccess : public Debug
-{
-	private:
-		const hid_t _loc_id;
-		DataspaceCreate *dataspace;
-		
-		int _init(std::vector<int> size, hid_t memtype_id);
-
-	public:
-		const std::string _dataset_str;
-
-		hid_t dataspace_id;
-		hid_t dataset_id;
-
-		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const int rank, const hsize_t *dims);
-		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size);
-		DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id);
-		~DatasetAccess();
-};
-
 class DataspaceCreate : public Debug
 {
 	public:
 		hid_t dataspace_id;
 
 		DataspaceCreate(const int rank, const hsize_t *dims);
-		DataspaceCreate(const std::vector<int> size);
+		/* DataspaceCreate(const std::vector<int> size); */
 		DataspaceCreate(const H5S_class_t type);
 		~DataspaceCreate();
+
+		template<typename T>
+		DataspaceCreate(const std::vector<T> size) :
+			Debug(DEBUG_FLAG)
+		{
+			int rank = size.size();
+			hsize_t *dims;
+			dims = new hsize_t[rank];
+
+			for (int i=0; i < rank; i++)
+			{
+				dims[i] = size[i];
+			}
+
+			dataspace_id = H5Screate_simple(rank, dims, NULL);
+
+			delete[] dims;
+		}
+};
+
+class DatasetAccess : public Debug
+{
+	private:
+		const hid_t _loc_id;
+		DataspaceCreate *dataspace;
+
+		/* int _init(std::vector<int> size, hid_t memtype_id); */
+		template<typename T>
+		int _init(const std::vector<T> size, const hid_t memtype_id)
+		{
+			dataspace = new DataspaceCreate(size);
+			dataspace_id = dataspace->dataspace_id;
+
+			// ==============================================
+			// Create dataset
+			// ==============================================
+			loc_id = H5Dcreate(_loc_id, _dataset_str.c_str(), memtype_id, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+			dataset_id = loc_id;
+
+			return 0;
+		}
+
+	public:
+		const std::string _dataset_str;
+
+		hid_t dataspace_id;
+		hid_t dataset_id;
+		hid_t loc_id;
+
+		DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const int rank, const hsize_t *dims);
+		DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const std::vector<int> size);
+		/* DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id); */
+		~DatasetAccess();
+
+		template<typename T>
+		DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const std::vector<T> size, const hid_t memtype_id) :
+			Debug(DEBUG_FLAG),
+			_dataset_str(dataset_str),
+			_loc_id(parent_id)
+		{
+			_init(size, memtype_id);
+		}
 };
 
 class PlistCreate : public Debug

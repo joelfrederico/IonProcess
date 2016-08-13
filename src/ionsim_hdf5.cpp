@@ -2,8 +2,6 @@
 #include <typeinfo>
 #include <stdexcept>
 
-const bool DEBUG_FLAG = false;
-
 // ==============================================
 // Debug
 // ==============================================
@@ -34,11 +32,11 @@ herr_t Debug::close(herr_t (*f)(hid_t), const hid_t attr_id, const std::string n
 // ==============================================
 // GroupAccess
 // ==============================================
-GroupAccess::GroupAccess(const hid_t &loc_id, const std::string group_str) :
+GroupAccess::GroupAccess(const hid_t &parent_id, const std::string group_str) :
 	Debug(DEBUG_FLAG),
 	_group_str(group_str)
 {
-	_loc_id = loc_id;
+	_loc_id = parent_id;
 
 	herr_t status;
 	H5G_info_t objinfo;
@@ -47,16 +45,17 @@ GroupAccess::GroupAccess(const hid_t &loc_id, const std::string group_str) :
 	// Access or create a new group
 	// ==============================================
 	H5Eset_auto(NULL, NULL, NULL);
-	group_id = H5Gopen(loc_id, _group_str.c_str(), H5P_DEFAULT);
-	if (group_id < 0)
+	loc_id = H5Gopen(parent_id, _group_str.c_str(), H5P_DEFAULT);
+	if (loc_id < 0)
 	{
-		group_id = H5Gcreate(loc_id, _group_str.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = H5Gget_info_by_name(loc_id, _group_str.c_str(), &objinfo, H5P_DEFAULT);
-		if ((status < 0) || (group_id < 0))
+		loc_id = H5Gcreate(parent_id, _group_str.c_str(), H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		status = H5Gget_info_by_name(parent_id, _group_str.c_str(), &objinfo, H5P_DEFAULT);
+		if ((status < 0) || (loc_id < 0))
 		{
 			std::cout << "Warning: could not create " << _group_str << std::endl;
 		}
 	}
+	group_id = loc_id;
 }
 
 GroupAccess::~GroupAccess()
@@ -209,10 +208,10 @@ std::vector<double> DatasetOpen::getdata() const
 // ==============================================
 // DatasetAccess
 // ==============================================
-DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const int rank, const hsize_t *dims) :
+DatasetAccess::DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const int rank, const hsize_t *dims) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str),
-	_loc_id(loc_id)
+	_loc_id(parent_id)
 {
 	std::vector<int> size;
 	size.resize(rank);
@@ -224,35 +223,35 @@ DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str,
 	_init(size, H5T_NATIVE_DOUBLE);
 }
 
-DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size) :
+DatasetAccess::DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const std::vector<int> size) :
 	Debug(DEBUG_FLAG),
 	_dataset_str(dataset_str),
-	_loc_id(loc_id)
+	_loc_id(parent_id)
 {
 	_init(size, H5T_NATIVE_DOUBLE);
 }
 
-DatasetAccess::DatasetAccess(const hid_t &loc_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id) :
-	Debug(DEBUG_FLAG),
-	_dataset_str(dataset_str),
-	_loc_id(loc_id)
-{
-	_init(size, H5T_NATIVE_DOUBLE);
-}
+/* DatasetAccess::DatasetAccess(const hid_t &parent_id, const std::string dataset_str, const std::vector<int> size, const hid_t memtype_id) : */
+/* 	Debug(DEBUG_FLAG), */
+/* 	_dataset_str(dataset_str), */
+/* 	_loc_id(parent_id) */
+/* { */
+/* 	_init(size, memtype_id); */
+/* } */
 
-int DatasetAccess::_init(const std::vector<int> size, const hid_t memtype_id)
-{
+/* int DatasetAccess::_init(const std::vector<int> size, const hid_t memtype_id) */
+/* { */
+/* 	dataspace = new DataspaceCreate(size); */
+/* 	dataspace_id = dataspace->dataspace_id; */
 
-	dataspace = new DataspaceCreate(size);
-	dataspace_id = dataspace->dataspace_id;
+/* 	// ============================================== */
+/* 	// Create dataset */
+/* 	// ============================================== */
+/* 	dataset_id = H5Dcreate(_loc_id, _dataset_str.c_str(), memtype_id, (*dataspace).dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); */
+/* 	loc_id = dataset_id; */
 
-	// ==============================================
-	// Create dataset
-	// ==============================================
-	dataset_id = H5Dcreate(_loc_id, _dataset_str.c_str(), memtype_id, (*dataspace).dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-	return 0;
-}
+/* 	return 0; */
+/* } */
 
 DatasetAccess::~DatasetAccess()
 {
@@ -268,23 +267,6 @@ DataspaceCreate::DataspaceCreate(const int rank, const hsize_t *dims) :
 	Debug(DEBUG_FLAG)
 {
 	dataspace_id = H5Screate_simple(rank, dims, NULL);
-}
-
-DataspaceCreate::DataspaceCreate(const std::vector<int> size) :
-	Debug(DEBUG_FLAG)
-{
-	int rank = size.size();
-	hsize_t *dims;
-	dims = new hsize_t[rank];
-
-	for (int i=0; i < rank; i++)
-	{
-		dims[i] = size[i];
-	}
-
-	dataspace_id = H5Screate_simple(rank, dims, NULL);
-
-	delete[] dims;
 }
 
 DataspaceCreate::DataspaceCreate(const H5S_class_t type) :
